@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.cfgtest.services</groupId>
+        <artifactId>mvn-bom</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <groupId>com.cfgtest.services</groupId>
+    <artifactId>customer-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>customer-service</name>
+    <description>Customer Service</description>
+    <properties>
+        <java.version>11</java.version>
+    </properties>
+    <dependencies>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Dependencies for open-apic-generator plugin-->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Refer to BOM for details on the plugin details
+             -->
+            <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/api-spec/Customer-Service-1.0.0.yaml
+                            </inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.cfgtest.services.customerservice.api</apiPackage>
+                            <modelPackage>com.cfgtest.services.customerservice.model</modelPackage>
+                            <supportingFilesToGenerate>
+                                ApiUtil.java
+                            </supportingFilesToGenerate>
+                            <configOptions>
+                                <!--								<sourceFolder>src/main/java/</sourceFolder>-->
+                                <!--								<delegatePattern>true</delegatePattern>-->
+                                <interfaceOnly>true</interfaceOnly>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+                <!--				<dependencies>-->
+                <!--					<dependency>-->
+                <!--						<groupId>javax.validation</groupId>-->
+                <!--						<artifactId>validation-api</artifactId>-->
+                <!--						<version>${validation-api.version}</version>-->
+                <!--					</dependency>-->
+                <!--				</dependencies>-->
+            </plugin>
+            <!--			Plugin to generate swagger documentation based on annotations
+            The plugin generates documentation within target folder and can be accessed using the below url
+            http://localhost:8080/v3/api-docs.
+
+            Url can be overridden using configuration entries
+            -->
+            <!--			<plugin>-->
+            <!--				<groupId>org.springdoc</groupId>-->
+            <!--				<artifactId>springdoc-openapi-maven-plugin</artifactId>-->
+            <!--				<version>0.2</version>-->
+            <!--				<executions>-->
+            <!--					<execution>-->
+            <!--						<phase>integration-test</phase>-->
+            <!--						<goals>-->
+            <!--							<goal>generate</goal>-->
+            <!--						</goals>-->
+            <!--					</execution>-->
+            <!--				</executions>-->
+            <!--				<configuration>-->
+            <!--&lt;!&ndash;					<apiDocsUrl>http://localhost:8080/v3/api-docs</apiDocsUrl>&ndash;&gt;-->
+            <!--					<outputFileName>risk-evaluation.json</outputFileName>-->
+            <!--				</configuration>-->
+            <!--			</plugin>-->
+            <!--			Plugin to generate pojo objects.. Usually used by client applications-->
+            <!--			<plugin>-->
+            <!--			<groupId>io.swagger</groupId>-->
+            <!--			<artifactId>swagger-codegen-maven-plugin</artifactId>-->
+            <!--			<version>2.2.3</version>-->
+            <!--			</plugin>-->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <!-- Used to generate the mapper implementation class during build, using annotation process concept of java.
+                            Annotations can be processed at runtime using reflection but it would rake time at startup, hence an alternate approach
+                            is to use annotation processors at compile-time.
+                            Inorder to perform, we need to define a class that extends AbstractProcessor and register it at compile time.. the processor
+                            contains an annotation to filter. within Maven you can register such classes using annotationProcessor tag..
+                            In below case we need mapstruct processor and lombok's processor to be registered which will modify the code at compile time.
+                            During build annotation processors are called by compiler when one of the configured annotations on the processors are found.
+                            THe processor then generates code or calls other annotation processors based on the logic within process().
+                        -->
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                        <!-- Ties mapstruct with lombok. -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <!--                            Needed when using lombok 1.18.16 and above -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>0.2.0</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <compilerArgs>
+                        <!--                            Compiler argument that will make the generated class spring aware by adding @Component annotation.-->
+                        <compilerArg>
+                            -Amapstruct.defaultComponentModel=spring
+                        </compilerArg>
+
+                    </compilerArgs>
+                </configuration>
+
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
