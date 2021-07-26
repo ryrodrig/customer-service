@@ -7,6 +7,7 @@ import com.cfgtest.services.customerservice.model.Customer;
 import com.cfgtest.services.customerservice.model.CustomerAddress;
 import com.cfgtest.services.customerservice.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class CustomerServiceController implements CustomerApi {
 
     private final CustomerService customerService;
@@ -39,6 +41,7 @@ public class CustomerServiceController implements CustomerApi {
 
     @Override
     public ResponseEntity<Customer> getCustomerByName(String customerName) {
+        log.info("Get Customer by name...");
         Customer customer =
                 new Customer()
                         .ssn(customerName)
@@ -47,6 +50,12 @@ public class CustomerServiceController implements CustomerApi {
                         .lastName("Tester")
                         .address(new CustomerAddress());
 //        customer = customerMapper.convertToCustomer(customerService.getCustomer(customer));
+        try {
+            Thread.sleep(3000);
+            log.info("Awakening Thread...");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return ResponseEntity.ok(customer);
     }
 
