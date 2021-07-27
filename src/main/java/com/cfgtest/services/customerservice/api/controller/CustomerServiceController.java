@@ -1,18 +1,15 @@
 package com.cfgtest.services.customerservice.api.controller;
 
-import com.cfgtest.services.customerservice.api.CustomerApi;
-import com.cfgtest.services.customerservice.api.mappers.CustomerMapper;
-import com.cfgtest.services.customerservice.dto.CustomerDTO;
+import com.cfgtest.services.customerservice.api.util.CustomerApi;
 import com.cfgtest.services.customerservice.model.Customer;
-import com.cfgtest.services.customerservice.model.CustomerAddress;
 import com.cfgtest.services.customerservice.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-
-import java.net.URI;
-import java.util.List;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,44 +20,36 @@ public class CustomerServiceController implements CustomerApi {
 
 //    private final CustomerMapper customerMapper;
 
+
     @Override
-    public ResponseEntity<Void> createCustomer(Customer customer) {
-        CustomerDTO customerDTO = customerService.createCustomer(customer);
-        return ResponseEntity.created(URI.create("/customer/" + customerDTO.getId())).build();
+    public Mono<ResponseEntity<Void>> createCustomer(Mono<Customer> customer, ServerWebExchange exchange) {
+        return CustomerApi.super.createCustomer(customer, exchange);
     }
 
     @Override
-    public ResponseEntity<Void> createCustomersWithArrayInput(List<Customer> customer) {
-        return CustomerApi.super.createCustomersWithArrayInput(customer);
+    public Mono<ResponseEntity<Void>> createCustomersWithArrayInput(Flux<Customer> customer, ServerWebExchange exchange) {
+        return CustomerApi.super.createCustomersWithArrayInput(customer, exchange);
     }
 
     @Override
-    public ResponseEntity<Void> deleteCustomer(String customerName) {
-        return CustomerApi.super.deleteCustomer(customerName);
+    public Mono<ResponseEntity<Void>> deleteCustomer(String customerName, ServerWebExchange exchange) {
+        return CustomerApi.super.deleteCustomer(customerName, exchange);
     }
 
     @Override
-    public ResponseEntity<Customer> getCustomerByName(String customerName) {
+    public Mono<ResponseEntity<Customer>> getCustomerByName(String customerName, ServerWebExchange exchange) {
         log.info("Get Customer by name...");
-        Customer customer =
-                new Customer()
-                        .ssn(customerName)
-                        .customerType(Customer.CustomerTypeEnum.GENERAL)
-                        .firstName("Test")
-                        .lastName("Tester")
-                        .address(new CustomerAddress());
-//        customer = customerMapper.convertToCustomer(customerService.getCustomer(customer));
-        try {
-            Thread.sleep(3000);
-            log.info("Awakening Thread...");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return ResponseEntity.ok(customer);
+        Mono<ResponseEntity<Customer>> responseEntityMono = customerService.getCustomer(new Customer().firstName(customerName)).flatMap((customer) -> {
+            log.info("Within Customer Service Controller flatMap");
+            return Mono.fromSupplier(() -> ResponseEntity.ok(customer));
+        });
+//        Mono<ResponseEntity<Customer>> responseEntityMono = Mono.fromSupplier(() -> );
+        log.info("Retrieved Customer information..");
+        return responseEntityMono;
     }
 
     @Override
-    public ResponseEntity<Void> updateCustomer(String customerName, Customer customer) {
-        return CustomerApi.super.updateCustomer(customerName, customer);
+    public Mono<ResponseEntity<Void>> updateCustomer(String customerName, Mono<Customer> customer, ServerWebExchange exchange) {
+        return CustomerApi.super.updateCustomer(customerName, customer, exchange);
     }
 }

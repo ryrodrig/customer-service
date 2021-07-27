@@ -78,7 +78,7 @@ public class CustomerDTO extends BaseDTO {
     @AllArgsConstructor
     // annotation does not create a new table but is part of the table the class is a instance variable of.
     @Embeddable
-    private static class CustomerAddress {
+    public static class CustomerAddress {
 
         private String line1;
 

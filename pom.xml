@@ -16,11 +16,31 @@
         <java.version>11</java.version>
     </properties>
     <dependencies>
-
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-web</artifactId>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.springframework</groupId>-->
+<!--                    <artifactId>spring-webmvc</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-webflux-ui</artifactId>
+            <version>1.5.9</version>
         </dependency>
 
         <!-- Dependencies for open-apic-generator plugin-->
@@ -57,7 +77,7 @@
                                 ${project.basedir}/src/main/resources/api-spec/Customer-Service-1.0.0.yaml
                             </inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.cfgtest.services.customerservice.api</apiPackage>
+                            <apiPackage>com.cfgtest.services.customerservice.api.util</apiPackage>
                             <modelPackage>com.cfgtest.services.customerservice.model</modelPackage>
                             <supportingFilesToGenerate>
                                 ApiUtil.java
@@ -66,6 +86,7 @@
                                 <!--								<sourceFolder>src/main/java/</sourceFolder>-->
                                 <!--								<delegatePattern>true</delegatePattern>-->
                                 <interfaceOnly>true</interfaceOnly>
+                                <reactive>true</reactive>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -111,6 +132,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <!-- Used to generate the mapper implementation class during build, using annotation process concept of java.
@@ -127,13 +149,19 @@
                             <artifactId>mapstruct</artifactId>
                             <version>${org.mapstruct.version}</version>
                         </path>
+                        <!-- Contains the mapstruct annotation processor -->
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
                         <!-- Ties mapstruct with lombok. -->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
                         </path>
-                        <!--                            Needed when using lombok 1.18.16 and above -->
+                        <!-- Needed when using lombok 1.18.16 and above -->
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-mapstruct-binding</artifactId>
