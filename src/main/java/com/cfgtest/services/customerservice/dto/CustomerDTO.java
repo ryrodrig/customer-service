@@ -1,12 +1,16 @@
 package com.cfgtest.services.customerservice.dto;
 
 
+import com.cfgtest.services.customerservice.utils.CFGCheck;
+import com.cfgtest.services.customerservice.utils.OnCreate;
+import com.cfgtest.services.customerservice.utils.OnUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -36,6 +40,9 @@ public class CustomerDTO extends BaseDTO {
     // Indicates a primary key
     @Id
     @GeneratedValue
+    // Custom interfaces defined that can be used as groups
+    @Null(groups = OnCreate.class, message = "Customer ID should be null during create.")
+    @NotNull(groups = OnUpdate.class, message = "Customer ID cannot be null.")
     private UUID id;
 
     private String firstName;
@@ -44,11 +51,15 @@ public class CustomerDTO extends BaseDTO {
 
     private String lastName;
 
+    @Past
     private Timestamp dateOfBirth;
 
+    @Email
     private String email;
 
-    @Column(length = 9, columnDefinition = "varchar")
+//    @Min(10)
+//    @Max(12)
+    @Column(length = 12, columnDefinition = "varchar")
     private String ssn;
 
     private String phone;
@@ -66,12 +77,15 @@ public class CustomerDTO extends BaseDTO {
 
     private Boolean employed;
 
+    // Custom constraint validator.
+    @CFGCheck
     private String employerName;
 
+    @Positive
     private Integer salary;
 
     @Embedded
-    private ExtendedFields extendedFields;
+    private ExtendedFields extendedFields = new ExtendedFields();
 
     @Data
     @NoArgsConstructor
